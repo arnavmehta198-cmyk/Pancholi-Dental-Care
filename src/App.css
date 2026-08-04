@@ -875,21 +875,73 @@ body.dg-scroll-lock {
   }
 }
 
-.reviews-cta {
-  position: relative;
-  z-index: 3;
-  margin-top: 2.5rem;
-  display: flex;
-  justify-content: center;
+/* Review submission is a popover card anchored under the top-right button,
+   not page content — the backdrop is transparent (just there to catch
+   outside clicks) and the card slides down from that corner. */
+.review-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: transparent;
+  cursor: default;
 }
 
-.reviews-leave-btn {
-  padding: 0.85rem 2rem;
-  border-radius: 9999px;
-  font-size: 1rem;
+.review-modal-card {
+  position: fixed;
+  top: 4.75rem;
+  right: 1rem;
+  z-index: 201;
+  width: min(360px, calc(100vw - 2rem));
+  max-height: calc(100vh - 6rem);
+  overflow-y: auto;
+  animation: review-modal-in 0.22s ease;
+}
+
+@keyframes review-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.review-modal-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.9rem;
+  border: none;
+  background: transparent;
+  color: #6f8397;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.review-modal-close:hover {
+  color: #0d4f7c;
+}
+
+@media (max-width: 640px) {
+  .review-modal-card {
+    top: 4.5rem;
+    right: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .review-modal-card {
+    animation: none;
+  }
 }
 
 .review-form {
+  position: relative;
   width: 100%;
   max-width: 480px;
   display: flex;

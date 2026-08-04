@@ -225,44 +225,63 @@ function ReviewForm({ onSubmitted }) {
   );
 }
 
-function ReviewsSection({ formOpen, onOpenForm }) {
+function ReviewsSection({ refreshToken }) {
   const { t } = useLanguage();
   const [reviews, setReviews] = useState([]);
 
-  const refresh = () => getApprovedReviews().then(setReviews);
   useEffect(() => {
-    refresh();
-  }, []);
+    getApprovedReviews().then(setReviews);
+  }, [refreshToken]);
 
   const loopedReviews = reviews.length ? [...reviews, ...reviews] : [];
+  if (loopedReviews.length === 0) return null;
 
   return (
     <section id="reviews" className="section reviews-section">
       <h2 className="section-title">{t('reviews.title')}</h2>
-      {loopedReviews.length > 0 && (
-        <div className="reviews-marquee">
-          <div className="reviews-track">
-            {loopedReviews.map((review, index) => (
-              <div className="review-card" key={`${review.id}-${index}`}>
-                <ReviewStars rating={review.rating} />
-                <p className="review-quote">&ldquo;{review.message}&rdquo;</p>
-                <p className="review-author">- {review.name}</p>
-              </div>
-            ))}
-          </div>
+      <div className="reviews-marquee">
+        <div className="reviews-track">
+          {loopedReviews.map((review, index) => (
+            <div className="review-card" key={`${review.id}-${index}`}>
+              <ReviewStars rating={review.rating} />
+              <p className="review-quote">&ldquo;{review.message}&rdquo;</p>
+              <p className="review-author">- {review.name}</p>
+            </div>
+          ))}
         </div>
-      )}
-
-      <div className="reviews-cta">
-        {formOpen ? (
-          <ReviewForm onSubmitted={refresh} />
-        ) : (
-          <button type="button" className="admin-btn admin-btn--primary reviews-leave-btn" onClick={onOpenForm}>
-            {t('reviews.leaveReview')}
-          </button>
-        )}
       </div>
     </section>
+  );
+}
+
+// A floating card, not page content: opened only from the top-right button,
+// slides in over whatever the visitor is currently looking at and closes
+// without leaving the page. Per explicit instruction, the review form does
+// not live embedded in the page layout at all.
+function ReviewModal({ onClose, onSubmitted }) {
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  return (
+    <div className="review-modal-backdrop" onClick={onClose}>
+      <div className="review-modal-card" onClick={e => e.stopPropagation()}>
+        <button type="button" className="review-modal-close" onClick={onClose} aria-label="Close">
+          &times;
+        </button>
+        <ReviewForm
+          onSubmitted={() => {
+            onSubmitted();
+          }}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -729,12 +748,8 @@ function AppInner() {
   const [currentView, setCurrentView] = useState(getInitialView);
   const [entryPhase, setEntryPhase] = useState('language');
   const [musicAutoPlay, setMusicAutoPlay] = useState(false);
-  const [reviewFormOpen, setReviewFormOpen] = useState(false);
-
-  const openReviewForm = () => {
-    document.querySelector('#reviews')?.scrollIntoView({ behavior: 'smooth' });
-    setReviewFormOpen(true);
-  };
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [reviewsRefreshToken, setReviewsRefreshToken] = useState(0);
   // Time from navigation start to first React mount — how long the site
   // actually took to become usable. If that's over 5s the device/connection
   // is struggling, so we skip autoplaying music (the toggle still works).
@@ -820,11 +835,17 @@ function AppInner() {
       <ScrollProgressBar />
       <AdminEntryDot />
       <SiteMenu />
-      <LeaveReviewButton onClick={openReviewForm} />
+      <LeaveReviewButton onClick={() => setReviewModalOpen(true)} />
 
       {entryPhase === 'language' && <LanguageGate onChoose={handleLanguageChosen} />}
       {entryPhase !== 'language' && <BackgroundMusic autoPlay={musicAutoPlay} />}
       {entryPhase === 'tutorial' && <Tutorial onDone={() => setEntryPhase('done')} />}
+      {reviewModalOpen && (
+        <ReviewModal
+          onClose={() => setReviewModalOpen(false)}
+          onSubmitted={() => setReviewsRefreshToken(t => t + 1)}
+        />
+      )}
 
       <main>
         <section id="home" className="hero">
@@ -889,7 +910,7 @@ function AppInner() {
         <StatsBanner />
       </main>
 
-      <ReviewsSection formOpen={reviewFormOpen} onOpenForm={openReviewForm} />
+      <ReviewsSection refreshToken={reviewsRefreshToken} />
 
       <main>
         <section id="about" className="section profile">
