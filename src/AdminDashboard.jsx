@@ -9,10 +9,12 @@ import {
   getAvailability,
   getContacts,
   getMfaFactors,
+  getReviews,
   logoutAdmin,
   setAvailability,
   unenrollMfa,
   updateAppointmentStatus,
+  updateReviewStatus,
   verifyMfaEnrollment
 } from './adminStore.js';
 import './Admin.css';
@@ -23,6 +25,7 @@ const HOUR_OPTIONS = Array.from({ length: 24 }, (_, i) => i);
 const TABS = [
   { id: 'appointments', label: 'Appointments' },
   { id: 'contacts', label: 'Messages' },
+  { id: 'reviews', label: 'Reviews' },
   { id: 'availability', label: 'Availability' },
   { id: 'calendar', label: 'Calendar' },
   { id: 'analytics', label: 'Analytics' },
@@ -121,6 +124,81 @@ function ContactsPanel({ contacts }) {
         </li>
       ))}
     </ul>
+  );
+}
+
+function ReviewsPanel({ reviews, onChange }) {
+  const respond = async (review, status) => {
+    await updateReviewStatus(review.id, status);
+    onChange();
+  };
+
+  if (reviews.length === 0) {
+    return <p className="admin-empty">No reviews yet.</p>;
+  }
+
+  const pending = reviews.filter(r => r.status === 'pending');
+  const decided = reviews.filter(r => r.status !== 'pending');
+
+  return (
+    <div className="admin-reviews">
+      {pending.length > 0 && (
+        <>
+          <h3 className="admin-reviews-heading">Pending ({pending.length})</h3>
+          <ul className="admin-list">
+            {pending.map(review => (
+              <li key={review.id} className="admin-card admin-card--pending">
+                <div className="admin-card-main">
+                  <strong>{review.name}</strong>
+                  <span className="admin-card-meta">{'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}</span>
+                  <p className="admin-card-message">{review.message}</p>
+                  <span className="admin-card-meta">{formatDate(review.submittedAt)}</span>
+                </div>
+                <div className="admin-card-actions">
+                  <button type="button" className="admin-btn admin-btn--accept" onClick={() => respond(review, 'approved')}>
+                    Approve
+                  </button>
+                  <button type="button" className="admin-btn admin-btn--reject" onClick={() => respond(review, 'rejected')}>
+                    Reject
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {decided.length > 0 && (
+        <>
+          <h3 className="admin-reviews-heading">Reviewed</h3>
+          <ul className="admin-list">
+            {decided.map(review => (
+              <li key={review.id} className={`admin-card admin-card--${review.status}`}>
+                <div className="admin-card-main">
+                  <strong>{review.name}</strong>
+                  <span className="admin-card-meta">{'★'.repeat(review.rating) + '☆'.repeat(5 - review.rating)}</span>
+                  <p className="admin-card-message">{review.message}</p>
+                  <span className="admin-card-meta">{formatDate(review.submittedAt)}</span>
+                </div>
+                <div className="admin-card-actions">
+                  <span className={`admin-status admin-status--${review.status}`}>{review.status}</span>
+                  {review.status === 'rejected' && (
+                    <button type="button" className="admin-btn admin-btn--accept" onClick={() => respond(review, 'approved')}>
+                      Approve instead
+                    </button>
+                  )}
+                  {review.status === 'approved' && (
+                    <button type="button" className="admin-btn admin-btn--reject" onClick={() => respond(review, 'rejected')}>
+                      Remove from site
+                    </button>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -484,13 +562,16 @@ function AdminDashboard({ onLogout }) {
   const [tab, setTab] = useState('appointments');
   const [appointments, setAppointments] = useState([]);
   const [contacts, setContacts] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [availability, setAvailabilityState] = useState(DEFAULT_AVAILABILITY);
 
   const refreshAppointments = () => getAppointments().then(setAppointments);
+  const refreshReviews = () => getReviews().then(setReviews);
 
   useEffect(() => {
     refreshAppointments();
     getContacts().then(setContacts);
+    refreshReviews();
     getAvailability().then(setAvailabilityState);
   }, []);
 
@@ -533,6 +614,7 @@ function AdminDashboard({ onLogout }) {
       <div className="admin-panel">
         {tab === 'appointments' && <AppointmentsPanel appointments={appointments} onChange={refreshAppointments} />}
         {tab === 'contacts' && <ContactsPanel contacts={contacts} />}
+        {tab === 'reviews' && <ReviewsPanel reviews={reviews} onChange={refreshReviews} />}
         {tab === 'availability' && <AvailabilityPanel availability={availability} onSave={setAvailabilityState} />}
         {tab === 'calendar' && <CalendarPanel appointments={appointments} />}
         {tab === 'analytics' && <AdminCharts />}

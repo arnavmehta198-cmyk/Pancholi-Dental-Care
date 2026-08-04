@@ -842,6 +842,132 @@ body.dg-scroll-lock {
   }
 }
 
+.reviews-cta {
+  position: relative;
+  z-index: 3;
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.reviews-leave-btn {
+  padding: 0.85rem 2rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+}
+
+.review-form {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+  box-sizing: border-box;
+  text-align: left;
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.25rem;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow: var(--glass-shadow);
+}
+
+.review-form h3 {
+  margin: 0;
+  color: #0d4f7c;
+  font-size: 1.15rem;
+}
+
+.review-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.review-field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4f6b80;
+}
+
+.review-field input,
+.review-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 2px solid #e5e5e5;
+  padding: 0.5rem 0;
+  font-size: 1.05rem;
+  font-family: inherit;
+  color: #1f2937;
+  background: transparent;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.25s ease;
+}
+
+.review-field input:focus,
+.review-field textarea:focus {
+  border-bottom-color: #0d4f7c;
+}
+
+.review-star-picker {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.review-star-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 1.8rem;
+  line-height: 1;
+  color: rgba(13, 79, 124, 0.2);
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.review-star-btn:hover {
+  transform: scale(1.1);
+}
+
+.review-star-btn.is-filled {
+  color: #e0a339;
+}
+
+.review-form-error {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  border-radius: 0.7rem;
+  background: #fdecec;
+  color: #b3261e;
+  font-size: 0.85rem;
+}
+
+.review-form-note {
+  margin: 0;
+  color: #6f8397;
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.review-form-success {
+  text-align: center;
+  align-items: center;
+}
+
+.review-form-success h3 {
+  color: #0d4f7c;
+}
+
+.review-form-success p {
+  margin: 0;
+  color: #4f6b80;
+}
+
 /* Contact */
 .contact-section {
   text-align: center;

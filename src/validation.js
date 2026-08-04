@@ -61,6 +61,18 @@ function buildSchemas(z) {
 
   const time = z.string().trim().min(1, 'Select a time.').max(20, 'Invalid time.');
 
+  const reviewMessage = z
+    .string()
+    .trim()
+    .min(1, 'Review is required.')
+    .max(500, 'Review is too long (500 characters max).');
+
+  const rating = z
+    .number()
+    .int('Pick a star rating.')
+    .min(1, 'Pick a star rating.')
+    .max(5, 'Pick a star rating.');
+
   return {
     contactSchema: z.object({ firstName: name, lastName: name, email, message }),
     appointmentSchema: z.object({
@@ -71,7 +83,8 @@ function buildSchemas(z) {
       phone,
       date: isoDate,
       time
-    })
+    }),
+    reviewSchema: z.object({ name, rating, message: reviewMessage })
   };
 }
 
@@ -92,6 +105,7 @@ async function validate(schemaName, payload) {
 
 export const validateContact = payload => validate('contactSchema', payload);
 export const validateAppointment = payload => validate('appointmentSchema', payload);
+export const validateReview = payload => validate('reviewSchema', payload);
 
 // Kick off the zod download when a visitor first focuses a form field, so the
 // module is usually already cached by the time they press submit.

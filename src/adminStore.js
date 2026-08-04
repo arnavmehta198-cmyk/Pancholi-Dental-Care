@@ -60,6 +60,17 @@ function mapContactRow(row) {
   };
 }
 
+function mapReviewRow(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    rating: row.rating,
+    message: row.message,
+    status: row.status,
+    submittedAt: row.submitted_at
+  };
+}
+
 // A session alone isn't "logged in" if the account has a verified TOTP
 // factor enrolled: Supabase issues a session at AAL1 right after password
 // sign-in, and only reaches AAL2 once the TOTP challenge is verified. Without
@@ -197,6 +208,61 @@ export async function addContact(contact) {
   });
   if (error) console.error('addContact failed', error);
   return { error: error?.message ?? null };
+}
+
+// Public-facing: only ever returns approved reviews — enforced by RLS
+// (the anon role's SELECT policy filters to status = 'approved'), so this
+// is safe even though the query itself doesn't filter client-side. A
+// pending or rejected review is invisible to this call regardless.
+export async function getApprovedReviews() {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('*')
+    .eq('status', 'approved')
+    .order('submitted_at', { ascending: false });
+  if (error) {
+    console.error('getApprovedReviews failed', error);
+    return [];
+  }
+  return data.map(mapReviewRow);
+}
+
+export async function addReview(review) {
+  if (!isSupabaseConfigured) {
+    console.error('addReview failed: Supabase is not configured');
+    return { error: 'not_configured' };
+  }
+  const supabase = await getSupabase();
+  const { error } = await supabase.from('reviews').insert({
+    name: review.name,
+    rating: review.rating,
+    message: review.message
+    // status is left unset — the column default ('pending') applies, and the
+    // RLS insert policy only allows status = 'pending' from this role anyway.
+  });
+  if (error) console.error('addReview failed', error);
+  return { error: error?.message ?? null };
+}
+
+// Admin-only: every review regardless of status, for the moderation queue.
+export async function getReviews() {
+  if (!isSupabaseConfigured) return [];
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.from('reviews').select('*').order('submitted_at', { ascending: false });
+  if (error) {
+    console.error('getReviews failed', error);
+    return [];
+  }
+  return data.map(mapReviewRow);
+}
+
+export async function updateReviewStatus(id, status) {
+  if (!isSupabaseConfigured) return;
+  const supabase = await getSupabase();
+  const { error } = await supabase.from('reviews').update({ status }).eq('id', id);
+  if (error) console.error('updateReviewStatus failed', error);
 }
 
 export async function getAppointments() {

@@ -5,8 +5,8 @@ import IntroAnimation from './IntroAnimation.jsx';
 import { logPageview } from './analytics.js';
 import CursorTrail from './CursorTrail.jsx';
 import MaskRevealText from './MaskRevealText.jsx';
-import { addContact, isAdminLoggedIn } from './adminStore.js';
-import { preloadValidation, validateContact } from './validation.js';
+import { addContact, addReview, getApprovedReviews, isAdminLoggedIn } from './adminStore.js';
+import { preloadValidation, validateContact, validateReview } from './validation.js';
 import { LanguageProvider, useLanguage } from './i18n.jsx';
 import LanguageGate from './LanguageGate.jsx';
 import Tutorial from './Tutorial.jsx';
@@ -121,35 +121,147 @@ function StatsBanner() {
   );
 }
 
-const reviewsData = [
-  { name: 'Sparsh', rating: 5, key: 'reviews.sparsh' },
-  { name: 'Arnav', rating: 5, key: 'reviews.arnav' },
-  { name: 'Hilori', rating: 4, key: 'reviews.hilori' },
-  { name: 'Aanya', rating: 5, key: 'reviews.aanya' },
-  { name: 'Helik', rating: 4, key: 'reviews.helik' },
-  { name: 'Sudhakar', rating: 5, key: 'reviews.sudhakar' },
-  { name: 'Mahendera', rating: 3, key: 'reviews.mahendera' }
-];
+function ReviewStars({ rating }) {
+  return (
+    <div className="review-stars" aria-hidden="true">
+      {'★'.repeat(rating)}
+      <span className="review-stars-empty">{'★'.repeat(5 - rating)}</span>
+    </div>
+  );
+}
+
+function ReviewForm({ onSubmitted }) {
+  const { t } = useLanguage();
+  const [name, setName] = useState('');
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [message, setMessage] = useState('');
+  const [submitError, setSubmitError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const { data, error: invalid } = await validateReview({ name, rating, message });
+    if (invalid) {
+      setSubmitError(invalid);
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError(null);
+    const { error } = await addReview(data);
+    setSubmitting(false);
+    if (error) {
+      setSubmitError('Something went wrong submitting your review. Please try again.');
+      return;
+    }
+    setSubmitted(true);
+    onSubmitted?.();
+  };
+
+  if (submitted) {
+    return (
+      <div className="review-form review-form-success">
+        <h3>{t('reviews.form.thanksTitle')}</h3>
+        <p>{t('reviews.form.thanksBody')}</p>
+      </div>
+    );
+  }
+
+  return (
+    <form className="review-form" onSubmit={handleSubmit}>
+      <h3>{t('reviews.form.title')}</h3>
+      <div className="review-field">
+        <label htmlFor="reviewName">{t('reviews.form.name')}</label>
+        <input
+          type="text"
+          id="reviewName"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="Jane Doe"
+          onFocus={preloadValidation}
+          required
+        />
+      </div>
+      <div className="review-field">
+        <label>{t('reviews.form.rating')}</label>
+        <div className="review-star-picker" role="radiogroup" aria-label={t('reviews.form.rating')}>
+          {[1, 2, 3, 4, 5].map(value => (
+            <button
+              key={value}
+              type="button"
+              className={`review-star-btn ${value <= (hoverRating || rating) ? 'is-filled' : ''}`}
+              role="radio"
+              aria-checked={rating === value}
+              aria-label={`${value} star${value === 1 ? '' : 's'}`}
+              onClick={() => setRating(value)}
+              onMouseEnter={() => setHoverRating(value)}
+              onMouseLeave={() => setHoverRating(0)}
+            >
+              ★
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="review-field">
+        <label htmlFor="reviewMessage">{t('reviews.form.message')}</label>
+        <textarea
+          id="reviewMessage"
+          rows={4}
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          placeholder={t('reviews.form.messagePlaceholder')}
+          required
+        />
+      </div>
+
+      {submitError && <p className="review-form-error">{submitError}</p>}
+
+      <button type="submit" className="contact-submit" disabled={submitting}>
+        {submitting ? t('reviews.form.sending') : t('reviews.form.submit')}
+      </button>
+      <p className="review-form-note">{t('reviews.form.moderationNote')}</p>
+    </form>
+  );
+}
 
 function ReviewsSection() {
   const { t } = useLanguage();
-  const loopedReviews = [...reviewsData, ...reviewsData];
+  const [reviews, setReviews] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+
+  const refresh = () => getApprovedReviews().then(setReviews);
+  useEffect(() => {
+    refresh();
+  }, []);
+
+  const loopedReviews = reviews.length ? [...reviews, ...reviews] : [];
+
   return (
     <section id="reviews" className="section reviews-section">
       <h2 className="section-title">{t('reviews.title')}</h2>
-      <div className="reviews-marquee">
-        <div className="reviews-track">
-          {loopedReviews.map((review, index) => (
-            <div className="review-card" key={`${review.name}-${index}`}>
-              <div className="review-stars" aria-hidden="true">
-                {'★'.repeat(review.rating)}
-                <span className="review-stars-empty">{'★'.repeat(5 - review.rating)}</span>
+      {loopedReviews.length > 0 && (
+        <div className="reviews-marquee">
+          <div className="reviews-track">
+            {loopedReviews.map((review, index) => (
+              <div className="review-card" key={`${review.id}-${index}`}>
+                <ReviewStars rating={review.rating} />
+                <p className="review-quote">&ldquo;{review.message}&rdquo;</p>
+                <p className="review-author">- {review.name}</p>
               </div>
-              <p className="review-quote">&ldquo;{t(review.key)}&rdquo;</p>
-              <p className="review-author">- {review.name}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+      )}
+
+      <div className="reviews-cta">
+        {showForm ? (
+          <ReviewForm onSubmitted={refresh} />
+        ) : (
+          <button type="button" className="admin-btn admin-btn--primary reviews-leave-btn" onClick={() => setShowForm(true)}>
+            {t('reviews.leaveReview')}
+          </button>
+        )}
       </div>
     </section>
   );

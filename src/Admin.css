@@ -228,6 +228,11 @@
   opacity: 0.85;
 }
 
+.admin-card--approved {
+  border-color: rgba(34, 139, 87, 0.3);
+  background: #f2fbf6;
+}
+
 .admin-card-main {
   display: flex;
   flex-direction: column;
@@ -280,6 +285,21 @@
 .admin-status--rejected {
   background: #fbe3e1;
   color: #b3261e;
+}
+
+.admin-status--approved {
+  background: #e1f6ea;
+  color: #1c7c46;
+}
+
+.admin-reviews-heading {
+  margin: 0 0 1rem;
+  color: #0d4f7c;
+  font-size: 0.95rem;
+}
+
+.admin-reviews-heading:not(:first-child) {
+  margin-top: 2rem;
 }
 
 .admin-btn {
