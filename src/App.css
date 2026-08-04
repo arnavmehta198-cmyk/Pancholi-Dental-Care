@@ -409,6 +409,39 @@ body.dg-scroll-lock {
   pointer-events: auto;
 }
 
+.leave-review-topbtn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 60;
+  padding: 0.7rem 1.25rem;
+  border: 1px solid rgba(13, 79, 124, 0.12);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #0d4f7c;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 8px 22px rgba(13, 79, 124, 0.12);
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.leave-review-topbtn:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .leave-review-topbtn {
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.78rem;
+  }
+}
+
 @media (max-width: 767px) {
   .hero-content {
     width: 100%;

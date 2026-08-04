@@ -225,10 +225,9 @@ function ReviewForm({ onSubmitted }) {
   );
 }
 
-function ReviewsSection() {
+function ReviewsSection({ formOpen, onOpenForm }) {
   const { t } = useLanguage();
   const [reviews, setReviews] = useState([]);
-  const [showForm, setShowForm] = useState(false);
 
   const refresh = () => getApprovedReviews().then(setReviews);
   useEffect(() => {
@@ -255,15 +254,24 @@ function ReviewsSection() {
       )}
 
       <div className="reviews-cta">
-        {showForm ? (
+        {formOpen ? (
           <ReviewForm onSubmitted={refresh} />
         ) : (
-          <button type="button" className="admin-btn admin-btn--primary reviews-leave-btn" onClick={() => setShowForm(true)}>
+          <button type="button" className="admin-btn admin-btn--primary reviews-leave-btn" onClick={onOpenForm}>
             {t('reviews.leaveReview')}
           </button>
         )}
       </div>
     </section>
+  );
+}
+
+function LeaveReviewButton({ onClick }) {
+  const { t } = useLanguage();
+  return (
+    <button type="button" className="leave-review-topbtn" onClick={onClick}>
+      {t('reviews.leaveReview')}
+    </button>
   );
 }
 
@@ -721,6 +729,12 @@ function AppInner() {
   const [currentView, setCurrentView] = useState(getInitialView);
   const [entryPhase, setEntryPhase] = useState('language');
   const [musicAutoPlay, setMusicAutoPlay] = useState(false);
+  const [reviewFormOpen, setReviewFormOpen] = useState(false);
+
+  const openReviewForm = () => {
+    document.querySelector('#reviews')?.scrollIntoView({ behavior: 'smooth' });
+    setReviewFormOpen(true);
+  };
   // Time from navigation start to first React mount — how long the site
   // actually took to become usable. If that's over 5s the device/connection
   // is struggling, so we skip autoplaying music (the toggle still works).
@@ -806,6 +820,7 @@ function AppInner() {
       <ScrollProgressBar />
       <AdminEntryDot />
       <SiteMenu />
+      <LeaveReviewButton onClick={openReviewForm} />
 
       {entryPhase === 'language' && <LanguageGate onChoose={handleLanguageChosen} />}
       {entryPhase !== 'language' && <BackgroundMusic autoPlay={musicAutoPlay} />}
@@ -874,7 +889,7 @@ function AppInner() {
         <StatsBanner />
       </main>
 
-      <ReviewsSection />
+      <ReviewsSection formOpen={reviewFormOpen} onOpenForm={openReviewForm} />
 
       <main>
         <section id="about" className="section profile">

@@ -4,6 +4,7 @@ import './Tutorial.css';
 
 const STEPS = [
   { selector: '.sidebar-menu-toggle', titleKey: 'tutorial.step.menu.title', bodyKey: 'tutorial.step.menu.body' },
+  { selector: '.leave-review-topbtn', titleKey: 'tutorial.step.review.title', bodyKey: 'tutorial.step.review.body' },
   { selector: '.hero-cta', titleKey: 'tutorial.step.cta.title', bodyKey: 'tutorial.step.cta.body' },
   { selector: '#services .section-title', titleKey: 'tutorial.step.services.title', bodyKey: 'tutorial.step.services.body' },
   { selector: '.contact-form', titleKey: 'tutorial.step.contact.title', bodyKey: 'tutorial.step.contact.body' },
