@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Pancholi Dental Care & Hair Transplant Center in Sagwara, Dungarpur, Rajasthan offers root canal, denture, crown bridge, cosmetic dentistry, and hair transplant with gentle, personalized care. Schedule your appointment today."
+    />
+    <title>Pancholi Dental Care & Hair Transplant Center</title>
+    <!--
+      Referrer-Policy works in a meta tag, so it applies even before the host
+      is configured. The other four recommended headers (X-Frame-Options,
+      X-Content-Type-Options, Strict-Transport-Security, Permissions-Policy)
+      are header-only and cannot be set here — they live in vercel.json and
+      public/_headers, whichever your host reads.
+    -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <!--
+      Content Security Policy. This site collects patient names, emails and phone
+      numbers, so it's worth locking down what can execute and where data can go.
+      The production bundle contains no eval()/new Function(), so script-src can
+      stay strict with no 'unsafe-eval'.
+
+      style-src needs 'unsafe-inline' because React writes inline style="" props
+      and DomeGallery sets element.style directly — that's unavoidable here.
+
+      NOTE: frame-ancestors and report-uri are ignored in a <meta> CSP. If your
+      host lets you set response headers, send this same policy as a
+      Content-Security-Policy header and add: frame-ancestors 'none';
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self';
+        style-src 'self' 'unsafe-inline';
+        font-src 'self';
+        img-src 'self' data: https://images.unsplash.com;
+        connect-src 'self' https://toptjuceybkbprcvnnbv.supabase.co;
+        frame-src https://www.openstreetmap.org;
+        worker-src 'self' blob:;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        upgrade-insecure-requests;
+      "
+    />
+    <!-- Supreme is served from /fonts (see @font-face in src/index.css). The
+         400 weight covers body text and the 700 the headings, so both are
+         preloaded to overlap with the CSS request instead of being discovered
+         only once the stylesheet parses. -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/supreme-400.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/supreme-700.woff2" crossorigin />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

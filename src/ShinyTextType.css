@@ -1,0 +1,46 @@
+.shiny-text-type {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+.shiny-text-type__content {
+  white-space: pre-wrap;
+  display: inline-block;
+  animation-name: shiny-text-sweep;
+}
+
+/* Sweeps the 200%-wide gradient across the text. Matches the range the old
+   JS driver produced (150% down to -50%), so the motion is unchanged. */
+@keyframes shiny-text-sweep {
+  from { background-position: 150% center; }
+  to { background-position: -50% center; }
+}
+
+.shiny-text-type__cursor {
+  display: inline-block;
+  margin-left: 0.1em;
+  color: inherit;
+  user-select: none;
+  animation: shiny-text-cursor-blink 1s ease-in-out infinite;
+}
+
+@keyframes shiny-text-cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shiny-text-type__content,
+  .shiny-text-type__cursor {
+    animation: none;
+  }
+}
+
+.shiny-text-type__cursor--hidden {
+  visibility: hidden;
+}

@@ -1,0 +1,305 @@
+/* Appointment scheduling flow — matches reference screenshots */
+
+.schedule-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #cfe6ff 0%, #eaf5ff 100%);
+  color: #000000;
+  font-family: 'Supreme', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-progress-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.schedule-progress-fill {
+  height: 100%;
+  background: #0d4f7c;
+  transition: width 250ms ease;
+}
+
+.schedule-back {
+  position: absolute;
+  top: 2rem;
+  left: 2.5rem;
+  color: #666666;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.schedule-back:hover {
+  color: #000000;
+}
+
+.schedule-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 8rem 2.5rem 6rem;
+  box-sizing: border-box;
+}
+
+.schedule-heading {
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #000000;
+  margin: 0 0 3rem;
+  max-width: 800px;
+}
+
+.schedule-form {
+  width: 100%;
+}
+
+.schedule-fields {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  align-items: stretch;
+}
+
+.schedule-fields--two {
+  gap: 2.5rem;
+}
+
+.schedule-fields--three {
+  gap: 1.25rem;
+}
+
+.schedule-field-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: box-shadow 0.2s ease;
+}
+
+.schedule-field-card:hover {
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.08);
+}
+
+.schedule-field-card label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888888;
+  margin-bottom: 1rem;
+}
+
+.schedule-field-card input {
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #e5e5e5;
+  padding: 0.5rem 0;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: #000000;
+  background: transparent;
+  outline: none;
+  transition: border-color 0.25s ease;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.schedule-field-card input::placeholder {
+  color: #bbbbbb;
+}
+
+.schedule-field-card input:focus {
+  border-bottom-color: #000000;
+}
+
+.schedule-field-card--email {
+  flex: 3;
+}
+
+.schedule-field-card--code {
+  flex: 1;
+  min-width: 120px;
+}
+
+.schedule-field-card--phone {
+  flex: 2;
+}
+
+.schedule-continue {
+  position: fixed;
+  bottom: 2.5rem;
+  right: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(160deg, rgba(20, 20, 20, 0.85), rgba(0, 0, 0, 0.75));
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: transform 0.2s ease, opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.schedule-continue:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background-color: #1a1a1a;
+}
+
+.schedule-continue:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.schedule-continue-arrow {
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+.schedule-step-back {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  color: #000000;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.schedule-step-back:hover {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.schedule-form-error {
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: 0.75rem;
+  background: #fdecec;
+  color: #b3261e;
+  font-size: 0.9rem;
+}
+
+.schedule-booking {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-bottom: 3rem;
+}
+
+.schedule-booking-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.schedule-booking-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #888888;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .schedule-booking {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .schedule-step-back {
+    position: static;
+    width: 100%;
+    justify-content: center;
+    padding: 0.85rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-sizing: border-box;
+  }
+
+  .schedule-back {
+    top: 1.5rem;
+    left: 1.5rem;
+  }
+
+  .schedule-main {
+    padding: 6rem 1.5rem 3rem;
+  }
+
+  .schedule-fields {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .schedule-field-card--email,
+  .schedule-field-card--code,
+  .schedule-field-card--phone {
+    flex: none;
+    width: 100%;
+  }
+
+  .schedule-continue {
+    position: static;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1.5rem;
+    padding: 0.85rem 1.5rem;
+    box-sizing: border-box;
+  }
+}
+
+/* Success / confirmation step */
+.schedule-main--success {
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.schedule-home-button {
+  text-decoration: none;
+}
+
+.schedule-home-button:hover {
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .schedule-progress-fill {
+    transition: none;
+  }
+}

@@ -1,0 +1,4 @@
+{
+  "_comment": "Add filenames to 'tracks' to play real audio instead of the built-in synthesised piano. See README.md in this folder for licensing. An empty list means the synth is used — this file exists so the player doesn't 404 on every page load.",
+  "tracks": []
+}

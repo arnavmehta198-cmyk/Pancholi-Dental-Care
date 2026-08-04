@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.env
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Dead-component snapshots kept locally during earlier iteration, not part
+# of the shipped app (nothing under src/ imports these) — no reason for a
+# client's repo to carry them.
+.unused-backup/
+
+# Raw phone-camera originals of the clinic photos. The app uses the optimized
+# WebP copies in src/assets/dome-optimized/ instead — these were only ever
+# staging files before that conversion and aren't referenced anywhere.
+/PHOTO-*.jpg
+
+# Local test-runner cache/output, regenerated on every run.
+test-results/

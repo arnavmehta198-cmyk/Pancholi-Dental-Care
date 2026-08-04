@@ -1,0 +1,19 @@
+# Security headers for Netlify / Cloudflare Pages (this file is served as-is
+# from the site root). Vercel reads vercel.json instead — keep both in sync.
+#
+# Four of these cannot be set from a <meta> tag: X-Frame-Options,
+# Strict-Transport-Security and X-Content-Type-Options are header-only, and
+# frame-ancestors is ignored in a meta CSP. index.html already carries the
+# full Content-Security-Policy; this adds the rest plus frame-ancestors.
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://api.fontshare.com; font-src 'self' https://cdn.fontshare.com; img-src 'self' data: https://images.unsplash.com; connect-src 'self' https://toptjuceybkbprcvnnbv.supabase.co; frame-src https://www.openstreetmap.org; worker-src 'self' blob:; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+
+# Hashed build assets are immutable — safe to cache hard.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
